@@ -1,100 +1,75 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import Container from '../components/Container';
 
 export default function Navbar() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
-    <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-lg shadow-sm z-50 border-b border-slate-100">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo/Branding */}
-        <a href="#home" className="flex items-center gap-3 hover:opacity-80 transition">
-          <div className="w-11 h-11 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md">
+    <nav
+      className={[
+        'fixed inset-x-0 top-0 z-50 border-b transition-colors',
+        scrolled ? 'bg-white/85 backdrop-blur border-slate-200 shadow-sm' : 'bg-white/60 backdrop-blur border-transparent'
+      ].join(' ')}
+    >
+      <Container className="h-16 flex items-center justify-between">
+        {/* Brand */}
+        <Link href="/#home" className="flex items-center gap-3 hover:opacity-90 transition" aria-label="Tamil Lens Home">
+          <div className="w-9 h-9 bg-gradient-to-br from-cyan-500 to-teal-500 rounded-lg flex items-center justify-center text-white font-bold">
             Ta
           </div>
-          <span className="text-2xl font-bold text-slate-900">Tamil Lens</span>
-        </a>
+          <span className="text-lg sm:text-xl font-bold text-slate-900">Tamil Lens</span>
+        </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
-          <a href="#home" className="text-slate-700 hover:text-cyan-600 transition font-medium">
-            Home
-          </a>
-          <a href="#learn" className="text-slate-700 hover:text-cyan-600 transition font-medium">
-            Lens & Learn
-          </a>
-          <a href="#quiz" className="text-slate-700 hover:text-cyan-600 transition font-medium">
-            Practice Quiz
-          </a>
-          <div className="h-6 w-px bg-slate-300"></div>
-          <a 
-            href="/signin" 
-            className="text-slate-700 hover:text-cyan-600 transition font-medium"
-          >
-            Sign In
-          </a>
-          <a 
-            href="/signup" 
-            className="bg-gradient-to-r from-cyan-500 to-teal-500 text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all"
+        {/* Desktop actions */}
+        <div className="hidden md:flex items-center gap-6">
+          <Link href="/#home" className="text-slate-700 hover:text-cyan-600 font-medium">Home</Link>
+          <Link
+            href="/auth/signin?mode=signup&next=/scan"
+            className="bg-gradient-to-r from-cyan-500 to-teal-500 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition"
           >
             Get Started
-          </a>
+          </Link>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button 
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        {/* Mobile toggle */}
+        <button
+          onClick={() => setOpen(v => !v)}
           className="md:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5 hover:bg-slate-100 rounded-lg transition"
           aria-label="Menu"
+          aria-expanded={open}
         >
-          <span className="w-6 h-0.5 bg-slate-700"></span>
-          <span className="w-6 h-0.5 bg-slate-700"></span>
-          <span className="w-6 h-0.5 bg-slate-700"></span>
+          <span className="w-6 h-0.5 bg-slate-700" />
+          <span className="w-6 h-0.5 bg-slate-700" />
+          <span className="w-6 h-0.5 bg-slate-700" />
         </button>
-      </div>
+      </Container>
 
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-slate-100">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-4">
-            <a 
-              href="#home" 
-              className="text-slate-700 hover:text-cyan-600 transition font-medium py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
+      {/* Mobile sheet */}
+      {open && (
+        <div className="md:hidden bg-white/95 backdrop-blur border-t border-slate-100">
+          <Container className="py-4 flex flex-col gap-3">
+            <Link href="/#home" className="py-2 text-slate-700 hover:text-cyan-600 font-medium" onClick={() => setOpen(false)}>
               Home
-            </a>
-            <a 
-              href="#learn" 
-              className="text-slate-700 hover:text-cyan-600 transition font-medium py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Lens & Learn
-            </a>
-            <a 
-              href="#quiz" 
-              className="text-slate-700 hover:text-cyan-600 transition font-medium py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Practice Quiz
-            </a>
-            <div className="h-px bg-slate-200 my-2"></div>
-            <a 
-              href="/signin" 
-              className="text-slate-700 hover:text-cyan-600 transition font-medium py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Sign In
-            </a>
-            <a 
-              href="/signup" 
-              className="bg-gradient-to-r from-cyan-500 to-teal-500 text-white px-6 py-3 rounded-lg font-semibold text-center hover:shadow-lg transition-all"
-              onClick={() => setIsMobileMenuOpen(false)}
+            </Link>
+            <Link
+              href="/auth/signin?mode=signup&next=/scan"
+              className="py-2 bg-gradient-to-r from-cyan-500 to-teal-500 text-white px-6 rounded-lg font-semibold text-center hover:shadow-lg transition"
+              onClick={() => setOpen(false)}
             >
               Get Started
-            </a>
-          </div>
+            </Link>
+          </Container>
         </div>
       )}
     </nav>

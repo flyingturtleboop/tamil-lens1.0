@@ -1,33 +1,24 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+'use client';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import './globals.css';
+import { usePathname } from 'next/navigation';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import { ReactNode } from 'react';
+import { AuthProvider } from '@/context/AuthContext'; // if you wrap context here
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+export default function RootLayout({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const hideChrome = pathname?.startsWith('/dashboard'); // no Navbar/Footer on dashboard
 
-export const metadata: Metadata = {
-  title: "Tamil Lens - Learn Tamil from the world around you",
-  description: "Tamil Lens turns your camera into a bilingual teacher. Learn Tamil through interactive lessons, natural audio pronunciation, and engaging practice quizzes.",
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className="min-h-screen bg-white text-slate-900 antialiased">
+        <AuthProvider>
+          {!hideChrome && <Navbar />}
+          {children}
+          {!hideChrome && <Footer />}
+        </AuthProvider>
       </body>
     </html>
   );
